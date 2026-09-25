@@ -228,7 +228,7 @@ function HostScreen() {
           </div>
           <div className="flex flex-wrap gap-2">
             {waiting && lobbyOpen && (
-              <Ctrl onClick={() => act("start")} primary>
+              <Ctrl onClick={() => startWithFullscreen("start")} primary>
                 BAŞLAT
               </Ctrl>
             )}
