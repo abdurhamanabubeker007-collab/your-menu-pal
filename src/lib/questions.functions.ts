@@ -22,7 +22,8 @@ export type QuestionSetRow = {
 
 async function db() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return supabaseAdmin as any;
 }
 
 export const listSets = createServerFn({ method: "POST" }).handler(async (): Promise<
