@@ -59,6 +59,19 @@ function HostScreen() {
     }
   };
 
+  const enterFullscreen = () => {
+    if (typeof document === "undefined") return;
+    if (!document.fullscreenElement) {
+      const el = arenaRef.current ?? document.documentElement;
+      void el.requestFullscreen?.().catch(() => {});
+    }
+  };
+
+  const startWithFullscreen = (action: string) => {
+    enterFullscreen();
+    act(action);
+  };
+
   const q = data?.question ?? null;
   const status = data?.status;
   const resolved = data?.resolved ?? false;
@@ -159,7 +172,7 @@ function HostScreen() {
                 <p className="mt-8 text-2xl font-extrabold text-foreground">İKİ OYUNCU HAZIR!</p>
               )}
               <button
-                onClick={() => act("start")}
+                onClick={() => startWithFullscreen("start")}
                 className="mt-8 rounded-2xl bg-foreground px-10 py-5 text-lg font-bold tracking-wide text-background transition-transform hover:scale-[1.01]"
               >
                 {data.players.length === 2 ? "OYUNU BAŞLAT" : "OYUNCU BEKLEMEDEN BAŞLAT"}
@@ -234,7 +247,10 @@ function HostScreen() {
               </>
             )}
             {data.status === "FINISHED" && (
-              <Ctrl onClick={() => act("restart")} primary>
+              <Ctrl
+                onClick={() => startWithFullscreen("restart")}
+                primary
+              >
                 BAŞLAT
               </Ctrl>
             )}
