@@ -78,8 +78,8 @@ export const createRoom = createServerFn({ method: "POST" })
       .order("created_at", { ascending: true });
     if (error) throw new Error(error.message);
     questionIds = (qs ?? [])
-      .filter((q) => q.question.trim() && q.option_a.trim() && (q.question_type === "fill" || q.option_b.trim()))
-      .map((q) => q.id);
+      .filter((q: any) => q.question.trim() && q.option_a.trim() && (q.question_type === "fill" || q.option_b.trim()))
+      .map((q: any) => q.id);
     if (!questionIds.length) {
       return { code: null as string | null, error: "Bu sette kaydedilmiş, tamamlanmış soru yok. Önce en az bir soruyu doldurup Kaydet'e basın." };
     }
@@ -89,8 +89,8 @@ export const createRoom = createServerFn({ method: "POST" })
       .select("id, question, option_a, option_b, question_type");
     if (qErr) throw new Error(qErr.message);
     questionIds = (questions ?? [])
-      .filter((q) => q.question.trim() && q.option_a.trim() && (q.question_type === "fill" || q.option_b.trim()))
-      .map((q) => q.id)
+      .filter((q: any) => q.question.trim() && q.option_a.trim() && (q.question_type === "fill" || q.option_b.trim()))
+      .map((q: any) => q.id)
       .sort(() => Math.random() - 0.5)
       .slice(0, QUESTION_COUNT);
   }
@@ -125,7 +125,7 @@ export const joinRoom = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if ((players ?? []).length >= 2) throw new Error("Bu yarışma dolu (en fazla 2 oyuncu)");
 
-    const taken = new Set((players ?? []).map((p) => p.team));
+    const taken = new Set((players ?? []).map((p: any) => p.team));
     const team = taken.has(1) ? 2 : 1;
 
     const { data: player, error: insErr } = await supabase
@@ -191,10 +191,10 @@ export const getRoomState = createServerFn({ method: "POST" })
         .select("player_id, answer_text, is_correct")
         .eq("room_id", room.id)
         .eq("question_id", currentId);
-      answeredIds = (answers ?? []).map((a) => a.player_id);
+      answeredIds = (answers ?? []).map((a: any) => a.player_id);
       // Soru yalnızca doğru cevap verildiğinde çözülür; yanlış cevap veren denemeye devam eder.
-      resolved = (answers ?? []).some((a) => a.is_correct);
-      const mine = (answers ?? []).find((a) => a.player_id === data.playerId);
+      resolved = (answers ?? []).some((a: any) => a.is_correct);
+      const mine = (answers ?? []).find((a: any) => a.player_id === data.playerId);
       if (mine) me = { answer: mine.answer_text ?? "", isCorrect: mine.is_correct };
     }
 
@@ -203,7 +203,7 @@ export const getRoomState = createServerFn({ method: "POST" })
       status: room.status as RoomStatus,
       ropePosition: room.rope_position,
       winner: room.winner,
-      players: (players ?? []).map((p) => ({
+      players: (players ?? []).map((p: any) => ({
         id: p.id,
         name: p.name,
         team: p.team as 1 | 2,
@@ -252,18 +252,18 @@ export const submitAnswer = createServerFn({ method: "POST" })
       .select("id, player_id, is_correct")
       .eq("room_id", room.id)
       .eq("question_id", currentId);
-    if ((existing ?? []).some((a) => a.is_correct))
+    if ((existing ?? []).some((a: any) => a.is_correct))
       throw new Error("Bu soru çözüldü, sıradaki soru geliyor");
 
     const norm = (v: string) => v.trim().toLocaleLowerCase("tr-TR").replace(/\s+/g, " ");
     const isCorrect =
       q.question_type === "fill"
         ? [q.option_a, q.option_b, q.option_c, q.option_d, ...(q.correct_answer.includes("||") ? q.correct_answer.split("||") : [])]
-            .filter((v) => v && v.trim())
+            .filter((v: any) => v && v.trim())
             .some((v) => norm(v) === norm(data.answer))
         : data.answer.length === 1 &&
           q.correct_answer.toUpperCase().includes(data.answer.toUpperCase());
-    const mine = (existing ?? []).find((a) => a.player_id === player.id);
+    const mine = (existing ?? []).find((a: any) => a.player_id === player.id);
     if (mine) {
       const { error: updErr } = await supabase
         .from("answers")
@@ -281,7 +281,7 @@ export const submitAnswer = createServerFn({ method: "POST" })
       if (insErr) throw new Error("Cevap kaydedilemedi");
     }
 
-    const someoneAlreadyCorrect = (existing ?? []).some((a) => a.is_correct);
+    const someoneAlreadyCorrect = (existing ?? []).some((a: any) => a.is_correct);
     if (isCorrect && !someoneAlreadyCorrect) {
       const delta = player.team === 1 ? -STEP : STEP;
       const next = Math.max(-WIN_LIMIT, Math.min(WIN_LIMIT, room.rope_position + delta));

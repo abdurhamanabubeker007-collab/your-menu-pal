@@ -37,11 +37,11 @@ export const listSets = createServerFn({ method: "POST" }).handler(async (): Pro
   if (error) throw new Error(error.message);
   const sets = data ?? [];
   const { data: questions } = await supabase.from("questions").select("id, set_id");
-  return sets.map((s) => ({
+  return sets.map((s: any) => ({
     id: s.id,
     title: s.title,
     description: s.description,
-    questionCount: (questions ?? []).filter((q) => q.set_id === s.id).length,
+    questionCount: (questions ?? []).filter((q: any) => q.set_id === s.id).length,
   }));
 });
 
@@ -84,7 +84,7 @@ export const deleteSet = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const supabase = await db();
     const { data: qs } = await supabase.from("questions").select("id").eq("set_id", data.id);
-    const ids = (qs ?? []).map((q) => q.id);
+    const ids = (qs ?? []).map((q: any) => q.id);
     if (ids.length) {
       await supabase.from("answers").delete().in("question_id", ids);
       await supabase.from("questions").delete().in("id", ids);
@@ -122,7 +122,7 @@ export const listQuestions = createServerFn({ method: "POST" })
     if (data.setId) query = query.eq("set_id", data.setId);
     const { data: rows, error } = await query;
     if (error) throw new Error(error.message);
-    return (rows ?? []).map(({ correct_answer_text, ...r }) => ({
+    return (rows ?? []).map(({ correct_answer_text, ...r }: any) => ({
       ...r,
       correct_answer: correct_answer_text ?? "",
     })) as QuestionRow[];
