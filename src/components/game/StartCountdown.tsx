@@ -37,6 +37,17 @@ export function useStartCountdown(status: string | undefined, qIndex: number | u
   const isGo = step === STEPS.length - 1;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/85 backdrop-blur-sm">
+      <button
+        onClick={() => {
+          setStep(null);
+          if (typeof document !== "undefined" && document.fullscreenElement) {
+            void document.exitFullscreen().catch(() => {});
+          }
+        }}
+        className="absolute right-4 top-4 z-10 rounded-lg border-2 border-border bg-panel px-4 py-2 text-xs font-bold text-foreground hover:bg-muted"
+      >
+        TAM EKRANDAN ÇIK
+      </button>
       <span
         key={step}
         className={`countdown-pop font-extrabold ${isGo ? "text-7xl text-primary sm:text-9xl" : "text-[10rem] text-foreground sm:text-[16rem]"}`}
